@@ -4,8 +4,8 @@ Static-first waitlist template for side projects:
 
 - `Astro` renders a mostly static marketing page.
 - `Hono` handles `/api/waitlist` on a Cloudflare Worker.
-- `Cloudflare D1` stores emails and metadata.
-- Built-in rate limit: **10 submissions per UTC day per IP hash**.
+- `Cloudflare D1` stores waitlist entries.
+- Built-in rate limit: **10 submissions per UTC day per IP address**.
 - Uses `Bun`, Tailwind CSS v4, and Starwind components.
 
 ## Deploy To Cloudflare Button
@@ -72,22 +72,7 @@ Example JSON body:
 ```json
 {
   "email": "you@example.com",
-  "qualifier": "repair_shop_owner",
-  "useCase": "Centralize diagnostics and customer approvals.",
-  "source": "https://example.com/",
-  "landingPath": "/",
-  "viewport": "1440x900",
-  "utmSource": "twitter",
-  "utmMedium": "social",
-  "utmCampaign": "launch",
-  "additionalFields": {
-    "teamSize": "3-10"
-  },
-  "metadata": {
-    "referrer": "https://x.com/",
-    "screen": "1728x1117",
-    "languages": ["en-US", "fr-BE"]
-  }
+  "useCase": "Centralize diagnostics and customer approvals."
 }
 ```
 

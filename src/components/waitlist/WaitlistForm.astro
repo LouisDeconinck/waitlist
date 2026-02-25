@@ -184,7 +184,6 @@ const t = useTranslations(lang);
       if (!this.form) return;
 
       const formData = new FormData(this.form);
-      const query = new URLSearchParams(window.location.search);
       const extras = this.collectAdditionalFields(this.form);
       
       const contextField = String(formData.get('context') || '').trim();
@@ -195,16 +194,7 @@ const t = useTranslations(lang);
       const payload = {
         email: String(formData.get('email') || ''),
         website: String(formData.get('website') || ''), // Honeypot
-        qualifier: 'Standard', 
         useCase: typeof extras.useCase === 'string' ? extras.useCase : undefined,
-        language: document.documentElement.lang || 'en',
-        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
-        additionalFields: extras,
-        source: window.location.href,
-        landingPath: window.location.pathname,
-        utmSource: query.get('utm_source') || undefined,
-        utmMedium: query.get('utm_medium') || undefined,
-        utmCampaign: query.get('utm_campaign') || undefined,
       };
 
       this.setSubmittingState(true);
