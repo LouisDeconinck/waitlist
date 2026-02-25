@@ -15,7 +15,7 @@
     "check": "astro check && tsc --noEmit --project tsconfig.worker.json",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
-    "deploy": "astro build && wrangler d1 migrations apply DB --remote && wrangler deploy"
+    "deploy": "wrangler d1 migrations apply DB --remote && wrangler deploy"
   },
   "cloudflare": {
     "bindings": {

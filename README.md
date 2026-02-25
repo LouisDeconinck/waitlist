@@ -108,4 +108,4 @@ Response shape:
 - `bun run check`: Astro + TypeScript checks.
 - `bun run db:migrate:local`: apply migrations to local D1.
 - `bun run db:migrate:remote`: apply migrations to remote D1.
-- `bun run deploy`: build + remote migration + `wrangler deploy`.
+- `bun run deploy`: remote migration + `wrangler deploy` (Wrangler runs `astro build` via `wrangler.jsonc`).
