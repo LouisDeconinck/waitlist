@@ -10,7 +10,7 @@ Static-first waitlist template for side projects:
 
 ## Deploy To Cloudflare Button
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/louis-deconinck/waitlist)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/LouisDeconinck/waitlist)
 
 Cloudflare reads `wrangler.jsonc` and `package.json` to provision resources and run build/deploy scripts.
 
