@@ -1,0 +1,80 @@
+---
+import '@/styles/starwind.css';
+import ThemeToggle from '@/components/ThemeToggle.astro';
+import LanguagePicker from '@/components/LanguagePicker.astro';
+import ReactToaster from '@/components/ReactToaster';
+import { getLangFromCookie, defaultLang } from '@/i18n/utils';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+
+const lang = defaultLang;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (document.cookie.includes('theme=dark')) return 'dark';
+        if (document.cookie.includes('theme=light')) return 'light';
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+    
+      if (theme === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+
+      if (sessionStorage.getItem('animations-played')) {
+        document.documentElement.classList.add('no-entry-animations');
+      } else {
+        sessionStorage.setItem('animations-played', 'true');
+      }
+    </script>
+    <style is:global>
+      .no-entry-animations .animate-in {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-[radial-gradient(circle_at_15%_20%,color-mix(in_oklab,var(--color-primary)_16%,transparent),transparent_38%),radial-gradient(circle_at_90%_10%,color-mix(in_oklab,var(--color-info)_20%,transparent),transparent_36%),radial-gradient(circle_at_80%_82%,color-mix(in_oklab,var(--color-success)_16%,transparent),transparent_34%),var(--color-background)] selection:bg-primary/30"
+  >
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-3">
+      <LanguagePicker />
+      <ThemeToggle />
+    </div>
+
+    <slot />
+
+    <ReactToaster client:only="react" />
+  </body>
+</html>

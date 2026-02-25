@@ -1,0 +1,265 @@
+---
+import { Button } from '@/components/starwind/button';
+import { Card, CardContent } from '@/components/starwind/card';
+import { Input } from '@/components/starwind/input';
+import { Label } from '@/components/starwind/label';
+import { Textarea } from '@/components/starwind/textarea';
+import type { WaitlistTemplateConfig } from '@/config/waitlist';
+import { useTranslations, getLangFromCookie } from '@/i18n/utils';
+import { defaultLang } from '@/i18n/ui';
+
+interface Props {
+  config: WaitlistTemplateConfig;
+}
+
+const { config } = Astro.props;
+
+const lang = defaultLang;
+const t = useTranslations(lang);
+---
+
+<section class="relative flex min-[100dvh] items-center justify-center px-4 py-16 sm:px-6 lg:px-8">
+  <div class="relative z-10 w-full max-w-6xl">
+    <waitlist-signup>
+      <div class="mb-12 flex flex-col items-center text-center">
+        <h1 class="font-heading mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-7xl text-balance animate-in fade-in slide-in-from-bottom-5 duration-700 delay-100 fill-mode-both" data-i18n="waitlist.headline">
+          {t('waitlist.headline')}
+        </h1>
+        
+        <p class="max-w-4xl text-lg sm:text-xl text-muted-foreground text-balance animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200 fill-mode-both" data-i18n="waitlist.subheadline">
+          {t('waitlist.subheadline')}
+        </p>
+      </div>
+
+      <div class="mx-auto w-full max-w-xl">
+        <Card class="border-border/50 bg-background/60 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300 fill-mode-both overflow-hidden relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50"></div>
+        <CardContent class="p-6 sm:p-8 relative">
+          <form class="space-y-5" method="post" action="/api/waitlist" novalidate data-waitlist-form>
+            <div class="space-y-2.5">
+              <Label for="email" class="text-sm font-medium"><span data-i18n="waitlist.emailLabel">{t('waitlist.emailLabel')}</span> <span class="text-primary">*</span></Label>
+              <Input 
+                id="email" 
+                type="email" 
+                name="email" 
+                autocomplete="email" 
+                required 
+                placeholder={t('waitlist.emailPlaceholder')} 
+                data-i18n-placeholder="waitlist.emailPlaceholder"
+                class="h-12 bg-background/50 border-input/60 focus:bg-background transition-colors text-base"
+              />
+            </div>
+
+            <div class="space-y-2.5">
+              <Label for="context" class="flex items-center justify-between text-sm font-medium">
+                <span data-i18n="waitlist.contextLabel">{t('waitlist.contextLabel')}</span>
+                <span class="text-xs text-muted-foreground font-normal" data-i18n="waitlist.contextOptional">{t('waitlist.contextOptional')}</span>
+              </Label>
+              <Textarea 
+                id="context" 
+                name="context" 
+                placeholder={t('waitlist.contextPlaceholder')}
+                data-i18n-placeholder="waitlist.contextPlaceholder"
+                rows={3}
+                class="resize-none bg-background/50 border-input/60 focus:bg-background transition-colors text-base"
+                data-extra-field="useCase"
+              />
+              <p class="text-[13px] text-muted-foreground mt-1.5" data-i18n="waitlist.contextHelper">
+                {t('waitlist.contextHelper')}
+              </p>
+            </div>
+
+            {/* Honeypot field */}
+            <div class="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true" tabindex="-1">
+              <Label for="website">Website</Label>
+              <Input id="website" type="text" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <div class="pt-2">
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                class="w-full text-base font-semibold h-12 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                data-i18n="waitlist.ctaPrimary"
+              >
+                {t('waitlist.ctaPrimary')}
+              </Button>
+            </div>
+
+            <p class="text-center text-[13px] text-muted-foreground max-w-xs mx-auto text-balance" data-i18n="waitlist.legalBlurb">
+              {t('waitlist.legalBlurb')}
+            </p>
+          </form>
+        </CardContent>
+      </Card>
+      </div>
+      
+      {/* Social proof / Logos placeholder (Optional, highly converting but keeping it clean for now) */}
+      <div class="mt-12 text-center animate-in fade-in slide-in-from-bottom-8 duration-700 delay-500 fill-mode-both">
+        <p class="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-6" data-i18n="waitlist.proofPoint">
+          {t('waitlist.proofPoint')}
+        </p>
+      </div>
+    </waitlist-signup>
+  </div>
+</section>
+
+<script>
+  import { toast } from "sonner";
+  import { ui, defaultLang } from '@/i18n/ui';
+
+  function getTranslation(key: keyof typeof ui['en']) {
+    const cookieMatch = document.cookie.match(/locale=(en|nl|fr|de)/);
+    const lang = (cookieMatch && cookieMatch[1] ? cookieMatch[1] : defaultLang) as keyof typeof ui;
+    return (ui as any)[lang][key] || (ui as any)[defaultLang][key];
+  }
+
+  // Apply translations to the DOM immediately on load if not default language
+  const cookieMatch = document.cookie.match(/locale=(en|nl|fr|de)/);
+  const currentLang = (cookieMatch && cookieMatch[1] ? cookieMatch[1] : defaultLang) as keyof typeof ui;
+  
+  if (currentLang !== defaultLang) {
+    document.documentElement.lang = currentLang;
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n') as keyof typeof ui['en'];
+      if (key && (ui as any)[currentLang][key]) {
+        el.textContent = (ui as any)[currentLang][key];
+      }
+    });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder') as keyof typeof ui['en'];
+      if (key && (ui as any)[currentLang][key]) {
+        (el as HTMLInputElement).placeholder = (ui as any)[currentLang][key];
+      }
+    });
+  }
+
+  class WaitlistSignup extends HTMLElement {
+    form: HTMLFormElement | null = null;
+    submitButton: HTMLButtonElement | null = null;
+    originalButtonContent: string = '';
+
+    connectedCallback() {
+      this.form = this.querySelector('[data-waitlist-form]');
+      this.submitButton = (this.form?.querySelector('button[type="submit"]') as HTMLButtonElement) || null;
+
+      this.form?.addEventListener('submit', (event) => this.onSubmit(event));
+    }
+
+    setSubmittingState(isSubmitting: boolean) {
+      if (!this.submitButton) return;
+      
+      const defaultLabel = getTranslation('waitlist.ctaPrimary');
+      const loadingLabel = getTranslation('waitlist.ctaLoading');
+      
+      this.submitButton.textContent = isSubmitting ? loadingLabel : defaultLabel;
+      
+      if (isSubmitting) {
+        this.submitButton.setAttribute('disabled', 'true');
+        this.submitButton.classList.add('opacity-80', 'cursor-not-allowed');
+      } else {
+        this.submitButton.removeAttribute('disabled');
+        this.submitButton.classList.remove('opacity-80', 'cursor-not-allowed');
+      }
+    }
+
+    collectAdditionalFields(form: HTMLFormElement) {
+      const extras: Record<string, string> = {};
+      const extraInputs = form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-extra-field]');
+
+      for (const input of extraInputs) {
+        const key = String(input.getAttribute('data-extra-field') || '').trim();
+        const value = String(input.value || '').trim();
+        if (key && value) extras[key] = value;
+      }
+
+      return extras;
+    }
+
+    async onSubmit(event: SubmitEvent) {
+      event.preventDefault();
+      if (!this.form) return;
+
+      const formData = new FormData(this.form);
+      const query = new URLSearchParams(window.location.search);
+      const extras = this.collectAdditionalFields(this.form);
+      
+      const contextField = String(formData.get('context') || '').trim();
+      if (contextField && !extras.useCase) {
+        extras.useCase = contextField;
+      }
+
+      const payload = {
+        email: String(formData.get('email') || ''),
+        website: String(formData.get('website') || ''), // Honeypot
+        qualifier: 'Standard', 
+        useCase: typeof extras.useCase === 'string' ? extras.useCase : undefined,
+        language: document.documentElement.lang || 'en',
+        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+        additionalFields: extras,
+        source: window.location.href,
+        landingPath: window.location.pathname,
+        utmSource: query.get('utm_source') || undefined,
+        utmMedium: query.get('utm_medium') || undefined,
+        utmCampaign: query.get('utm_campaign') || undefined,
+      };
+
+      this.setSubmittingState(true);
+      const toastId = toast.loading(getTranslation('toast.submitting.title'), {
+        description: getTranslation('toast.submitting.desc'),
+      });
+
+      try {
+        const response = await fetch('/api/waitlist', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            accept: 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const responseBody = (await response.json().catch(() => ({}))) as any;
+
+        if (!response.ok) {
+          const fallbackMessage = response.status === 429
+              ? getTranslation('toast.error.ratelimit')
+              : getTranslation('toast.error.fallback');
+
+          toast.error(getTranslation('toast.error.title'), {
+            id: toastId,
+            description: responseBody?.message || fallbackMessage,
+          });
+          return;
+        }
+
+        this.form.reset();
+        toast.success(getTranslation('toast.success.title'), {
+          id: toastId,
+          description: responseBody?.message || getTranslation('toast.success.desc'),
+        });
+        
+        // Hide form on success
+        this.form.style.display = 'none';
+        
+      } catch {
+        toast.error(getTranslation('toast.error.title'), {
+          id: toastId,
+          description: getTranslation('toast.error.network'),
+        });
+      } finally {
+        // Only set back submitting state if not success (form isn't hidden)
+        if (this.form.style.display !== 'none') {
+          this.setSubmittingState(false);
+        }
+      }
+    }
+  }
+
+  if (!customElements.get('waitlist-signup')) {
+    customElements.define('waitlist-signup', WaitlistSignup);
+  }
+</script>

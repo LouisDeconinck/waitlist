@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["worker-configuration.d.ts", "src/worker.ts"],
+  "exclude": ["dist", "node_modules", "src/components", "src/pages"]
+}

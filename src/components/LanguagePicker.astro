@@ -1,0 +1,70 @@
+---
+import { getLangFromCookie, defaultLang } from '@/i18n/utils';
+import { languages } from '@/i18n/ui';
+
+// Since this is statically pre-rendered, we default to the base language.
+// The client-side script will handle reading the cookie and updating the UI/DOM on hydration.
+const initialLang = defaultLang;
+---
+
+<language-picker>
+  <div class="relative inline-flex items-center">
+    <select
+      id="language-select"
+      class="h-9 cursor-pointer appearance-none rounded-md border border-border bg-background/50 pl-3 pr-8 text-sm font-medium shadow-sm transition-colors hover:bg-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+      aria-label="Select language"
+    >
+      {Object.entries(languages).map(([code, name]) => (
+        <option value={code} selected={code === initialLang}>
+          {code.toUpperCase()} - {name}
+        </option>
+      ))}
+    </select>
+    <div class="pointer-events-none absolute right-2.5 flex items-center">
+      <svg class="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </div>
+</language-picker>
+
+<script>
+  class LanguagePicker extends HTMLElement {
+    connectedCallback() {
+      const select = this.querySelector('select');
+      
+      // Auto-detect language if no cookie is set
+      const hasCookie = document.cookie.includes('locale=');
+      if (!hasCookie) {
+        let browserLang = navigator.language.split('-')[0];
+        const supportedLangs = ['en', 'nl', 'fr', 'de'];
+        if (!supportedLangs.includes(browserLang)) {
+          browserLang = 'en';
+        }
+        
+        // Only set and reload if the current selection is different from the auto-detected one
+        const currentSelected = select?.value;
+        if (select && currentSelected !== browserLang && window.location.pathname === '/') {
+          document.cookie = `locale=${browserLang};path=/;max-age=31536000`;
+          select.value = browserLang;
+          window.location.reload();
+        }
+      } else {
+        // Read cookie and update select just to be sure
+        const match = document.cookie.match(/locale=(en|nl|fr|de)/);
+        if (match && match[1] && select) {
+          select.value = match[1];
+        }
+      }
+
+      select?.addEventListener('change', (e) => {
+        const target = e.target as HTMLSelectElement;
+        const newLang = target.value;
+        document.cookie = `locale=${newLang};path=/;max-age=31536000`;
+        window.location.reload();
+      });
+    }
+  }
+
+  customElements.define('language-picker', LanguagePicker);
+</script>

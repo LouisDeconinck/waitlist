@@ -1,0 +1,11 @@
+---
+import WaitlistForm from '@/components/waitlist/WaitlistForm.astro';
+import { waitlistConfig } from '@/config/waitlist';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title={`${waitlistConfig.productName} - Waitlist`} description={waitlistConfig.subheadline}>
+  <main>
+    <WaitlistForm config={waitlistConfig} />
+  </main>
+</BaseLayout>
